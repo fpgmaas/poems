@@ -12,5 +12,5 @@ def clean_comment(comment):
     comment = re.sub('\s*([>])\s*', r'\1', comment) # remove space between line breaks
     comment = re.sub(' +',' ',comment) # Remove multi-white space
     comment = re.sub('>+','>',comment) # Remove multi-linebreaks
-    comment = comment.strip('\w>')
+    comment = comment.strip(' >')
     return comment
