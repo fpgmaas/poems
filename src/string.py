@@ -1,7 +1,8 @@
 import re
 
 def clean_comment(comment):
-    comment = comment.lower()
+    comment = comment.lower() # Remove quoted text, often at start of a comment.
+    comment = re.sub(r'&gt.+\n','',comment)
     comment = re.sub(r'(https?://\S+)',r' ',comment) # Remove URL's
     comment = re.sub(r'\n','>',comment) # Replace \n with a special character to denote linebreaks
     comment = re.sub(r'(/r/\S+)',r' ',comment) # remove links to specific subreddits
@@ -11,5 +12,5 @@ def clean_comment(comment):
     comment = re.sub('\s*([>])\s*', r'\1', comment) # remove space between line breaks
     comment = re.sub(' +',' ',comment) # Remove multi-white space
     comment = re.sub('>+','>',comment) # Remove multi-linebreaks
-    comment = comment.strip()
+    comment = comment.strip('\w>')
     return comment
