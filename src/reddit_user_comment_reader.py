@@ -3,6 +3,9 @@
 # https://www.reddit.com/r/pushshift/comments/9zhj0x/how_to_get_an_archive_of_all_your_comments_from/
 ###
 
+import requests
+import time
+
 def get_comments_from_pushshift(**kwargs):
     r = requests.get("https://api.pushshift.io/reddit/comment/search/",params=kwargs)
     data = r.json()
