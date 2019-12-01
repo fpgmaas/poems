@@ -41,6 +41,7 @@ def load_data(json_filepath,verbose=False):
     df['poem'] = df['body'].apply(clean_comment)
     df['datetime'] = df['created_utc'].apply(dt.datetime.fromtimestamp)
     df['date'] = df['datetime'].dt.date
+    df['awards_dict'] = df['all_awardings'].apply(lambda x: {y['name'] :  y['count'] for y in x}) 
     df['awards_simple'] = df['all_awardings'].apply(lambda x: [y['name'] + ': ' + str(y['count']) for y in x]) 
     df['number_of_lines'] = df['poem'].apply(lambda x: 1+ sum(1 for _ in re.finditer(r'>', x)))
     df['comment_length']= df['poem'].str.len()
