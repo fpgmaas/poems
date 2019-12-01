@@ -86,3 +86,30 @@ def plot_horizontal_bar(labels, values, title, xaxis_title, yaxis_title, figsize
         )
     )
     return fig
+
+def plot_heatmap(z,x,y,title,figsize: tuple = (600,600)):
+    """  
+    z: The values, a 2d-array or 2d-list
+    x: Labels for the x-axis
+    y: Labels for the y-axis
+    title: Title of the plot
+    figsize: (width, height)
+    """
+    
+    fig = go.Figure(data=go.Heatmap(
+                       z=z,
+                       x=x,
+                       y=y,
+        colorscale='YlOrRd',
+        zmid = 0
+        )
+    )
+    fig.update_layout(
+        title=title,
+        title_x=0.5,
+        width=figsize[0],
+        height=figsize[1],
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'
+    )
+    return fig
