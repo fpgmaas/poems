@@ -1,3 +1,4 @@
+import os
 import subprocess
 import re
 
@@ -10,7 +11,7 @@ def print2_list(comment_list):
         print('\n-------\n')
         
         
-def export_ipynb_for_github_pages(filename,front_matter_str):
+def export_ipynb_for_github_pages(filename,front_matter_str,prefix):
     """
     Converts the .ipynb file to a .html file with all code omitted. Also replaces 
     all occurences of '{{' with '{ {' because otherwise this gives issues when Jekyll 
@@ -18,9 +19,9 @@ def export_ipynb_for_github_pages(filename,front_matter_str):
     
     Edited from https://davistownsend.github.io/blog/PlotlyBloggingTutorial/
     """
-    
-    subprocess.call(["jupyter", "nbconvert","--to","html","--template","hidecode",filename])
-    filename_html = re.sub('ipynb','html',filename)
+    filename_html = prefix + re.sub('ipynb','html',filename)
+    subprocess.call(["jupyter", "nbconvert","--to","html","--template","hidecode",filename,"--output",filename_html])
+
     subprocess.call(["sed", "-i", "s/{{/{ {/g", filename_html])
 
     with open(filename_html, 'r') as original: 

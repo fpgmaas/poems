@@ -115,7 +115,43 @@ def plot_heatmap(z,x,y,title,figsize: tuple = (600,600)):
     )
     return fig
 
-def grouped_scatter_plot(x,y,groups,unique_groups,text,title,xaxis_title,yaxis_title,
+def plot_scatter(x,y,text,title,xaxis_title,yaxis_title):
+    """
+    Returns a grouped plotly scatter plot. 
+    x_col: x values
+    y_col: y values
+    text: numpy array with hover text for each observation
+    title: Title of the plot
+    xaxis_title: Tile of the x-axis
+    yaxis_title: Tile of the y-axis
+    marker: optional, to add as parameter to go.Scatter
+    """
+    
+    fig = go.Figure(
+            data=go.Scatter(
+                x=x,
+                y=y,
+                mode='markers',
+                marker=dict(
+                    size = 8,
+                    line_width=1,
+                    opacity=0.7
+                ),
+                hoverinfo = 'text',
+                text=text
+            )
+    )
+
+    fig.update_layout(
+        title=title,
+        title_x=0.5,
+        template='simple_white',
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title
+    )
+    return fig
+
+def plot_grouped_scatter(x,y,groups,unique_groups,text,title,xaxis_title,yaxis_title,
                          marker=dict(size = 10,line_width=1,opacity=0.7)):
     """
     Returns a grouped plotly scatter plot. 
