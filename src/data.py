@@ -48,8 +48,8 @@ def load_data(json_filepath,verbose=False):
     df['average_line_length'] = df['comment_length']/(df['number_of_lines'])
     # Try to determine if comment or poem.
     df['type'] = 'poem'
-    df.loc[df['date']!=dt.date(2015,6,23),'type'] ='comment' # AMA
-    df.loc[df['poem'].apply(len)>0,'type'] = 'comment'
-    df.loc[df['number_of_lines']>1,'type'] = 'comment'
-    df.loc[df['average_line_length']<55,'type'] = 'comment'
+    df.loc[df['date']==dt.date(2015,6,23),'type'] ='comment' # AMA
+    df.loc[df['poem'].apply(len)<1,'type'] = 'comment'
+    df.loc[df['number_of_lines']<=1,'type'] = 'comment'
+    df.loc[df['average_line_length']>=55,'type'] = 'comment'
     return df
