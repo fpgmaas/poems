@@ -1,5 +1,6 @@
 import plotly.graph_objs as go
 from typing import List
+import numpy as np
 
 def plot_histogram(x, title, xaxis_title, yaxis_title, params: dict = None):
     """
@@ -111,5 +112,43 @@ def plot_heatmap(z,x,y,title,figsize: tuple = (600,600)):
         height=figsize[1],
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(0,0,0,0)'
+    )
+    return fig
+
+def grouped_scatter_plot(x,y,groups,unique_groups,text,title,xaxis_title,yaxis_title,
+                         marker=dict(size = 10,line_width=1,opacity=0.7)):
+    """
+    Returns a grouped plotly scatter plot. 
+    x_col: x values
+    y_col: y values
+    groups: The group for each observation
+    unique_groups: The unique groups. Used to make sure that legens is in same order as other plots.
+    text: numpy array with hover text for each observation
+    title: Title of the plot
+    xaxis_title: Tile of the x-axis
+    yaxis_title: Tile of the y-axis
+    marker: optional, to add as parameter to go.Scatter
+    """
+    fig = go.Figure()
+
+    for group in unique_groups:
+        idx = groups==group
+        fig.add_trace(go.Scatter(
+            x=x[idx],
+            y=y[idx],
+            mode='markers',
+            name=group,
+            marker = marker,
+            hoverinfo = 'text',
+            text = np.array(text)[idx],
+        )
+     )
+
+    fig.update_layout(
+        title=title,
+        title_x=0.5,
+        template='simple_white',
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title
     )
     return fig
