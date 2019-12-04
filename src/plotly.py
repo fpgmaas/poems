@@ -1,4 +1,5 @@
 import plotly.graph_objs as go
+from plotly.subplots import make_subplots
 from typing import List
 import numpy as np
 
@@ -118,8 +119,8 @@ def plot_heatmap(z,x,y,title,figsize: tuple = (600,600)):
 def plot_scatter(x,y,text,title,xaxis_title,yaxis_title):
     """
     Returns a grouped plotly scatter plot. 
-    x_col: x values
-    y_col: y values
+    x: x values
+    y: y values
     text: numpy array with hover text for each observation
     title: Title of the plot
     xaxis_title: Tile of the x-axis
@@ -155,8 +156,8 @@ def plot_grouped_scatter(x,y,groups,unique_groups,text,title,xaxis_title,yaxis_t
                          marker=dict(size = 10,line_width=1,opacity=0.7)):
     """
     Returns a grouped plotly scatter plot. 
-    x_col: x values
-    y_col: y values
+    x: x values
+    y: y values
     groups: The group for each observation
     unique_groups: The unique groups. Used to make sure that legens is in same order as other plots.
     text: numpy array with hover text for each observation
@@ -184,6 +185,46 @@ def plot_grouped_scatter(x,y,groups,unique_groups,text,title,xaxis_title,yaxis_t
         title=title,
         title_x=0.5,
         template='simple_white',
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title
+    )
+    return fig
+
+def plot_multiple_timelines(x,y,groups,unique_groups,text,title,xaxis_title,yaxis_title,figsize:tuple=(600,900)):
+    """
+    Returns a plot with multiple timelines, one for each group in unique_groups.
+    x: x values
+    y: y values
+    groups: The group for each observation
+    unique_groups: The unique groups. Used to make sure that legens is in same order as other plots.
+    text: numpy array with hover text for each observation
+    title: Title of the plot
+    xaxis_title: Tile of the x-axis
+    yaxis_title: Tile of the y-axis
+    figsize: tuple (width, height) of plot.
+    """
+    fig = go.Figure()
+    fig = make_subplots(rows=10, cols=1)
+    k=1
+    for group in unique_groups:
+        subset = groups==group
+        fig.append_trace(
+            go.Scatter(
+                x=x[subset],
+                y=y[subset],
+                mode='lines',
+                name=group,
+                hoverinfo = 'text',
+                text=text[subset]
+            ),
+        row=k, col=1)
+        k+=1
+    fig.update_layout(
+        width=figsize[0],
+        height=figsize[1],
+        title=title,
+        title_x=0.5,
+        template = 'simple_white',
         xaxis_title=xaxis_title,
         yaxis_title=yaxis_title
     )
