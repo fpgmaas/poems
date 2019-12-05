@@ -117,21 +117,21 @@ def merge_lines(lines, tuple_list, sep = ''):
     """
     return [sep.join([lines[a] for a in tpl]) for tpl in tuple_list]
 
-def same_non_stressed(a,b):
+def count_matching_zeroes(a,b):
     """
     Count the number of places where two strings both have a '0'.
     
     Example:
-    > same_non_stressed('101','001') 
+    > scansion_match_score('101','001') 
     > 1
     
     """
-    return sum ((a[i] == '0') and (b[i] == '0') for i in range(len(a)))
+    return sum((a[i] == '0') and (b[i] == '0') for i in range(len(a)))
 
 def get_known_metre(scansion_list, known_metres_inv):
     """
     Use a list of scansion per line to estimate the metre of the poem. The assumption is 
-    that a poem always has at most two different known metres. Furthermore, since our method of
+    that a poem always has at most three different known metres. Furthermore, since our method of
     identifying the scansion overestimates the number of stressed syllables, we will use the number
     of accurate non-stressed syllables to determine the known metre.
     
@@ -146,11 +146,13 @@ def get_known_metre(scansion_list, known_metres_inv):
     > ['trochaic bimeter']
     
     """
+    scansion_list = [x for x in scansion_list if '?' not in x]
+    
     # First, create metre_list; a list which elements have the structure [a,b] where a is the number 
     # of syllables in the line, and b a list of the most likely know metres.
     metre_list=[]
     for scansion in scansion_list:
-        l = [(same_non_stressed(scansion,k),v) for k, v in known_metres_inv.items() if len(k) == len(scansion)]    
+        l = [(count_matching_zeroes(scansion,k),v) for k, v in known_metres_inv.items() if len(k) == len(scansion)]    
         if l:
             maxValue = max(l, key=lambda x: x[0])[0]
             maxValueList = [x[1] for x in l if x[0] == maxValue]
@@ -158,13 +160,13 @@ def get_known_metre(scansion_list, known_metres_inv):
 
     # If metre_list has at least one element, create metres_list. The elements in this list
     # contain per line length all the predicted metres, still to be flattened.
-    # If more than two elements, we only look at the stats for the two highest line lengths.
+    # If more than three elements, we only look at the stats for the three highest line lengths.
     # this is to filter outliers, if in some shorter lines the metre was not found and thus they
     # could not be combined.
     if metre_list:        
         (values,counts) = np.unique([x[0] for x in metre_list],return_counts=True)
         values = values[counts>1]
-        values = sorted(list(values),reverse=True)[:np.min([len(values),2])]       
+        values = sorted(list(values),reverse=True)[:np.min([len(values),3])]       
         metres_list = [[y[1] for y in metre_list if y[0] == val] for val in values]
 
         # Now, find per line length the most commonly predicted metre. In case of a tie, pick one at random.

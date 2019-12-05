@@ -204,7 +204,9 @@ def plot_multiple_timelines(x,y,groups,unique_groups,text,title,xaxis_title,yaxi
     figsize: tuple (width, height) of plot.
     """
     fig = go.Figure()
-    fig = make_subplots(rows=10, cols=1)
+    fig = make_subplots(rows=len(unique_groups), cols=1,
+                               x_title=xaxis_title,
+        y_title=yaxis_title)
     k=1
     for group in unique_groups:
         subset = groups==group
@@ -219,13 +221,14 @@ def plot_multiple_timelines(x,y,groups,unique_groups,text,title,xaxis_title,yaxi
             ),
         row=k, col=1)
         k+=1
+    for i in range(len(unique_groups)):    
+        fig.update_yaxes(range=[min(y), max(y)], row=i+1, col=1)
+
     fig.update_layout(
         width=figsize[0],
         height=figsize[1],
         title=title,
         title_x=0.5,
-        template = 'simple_white',
-        xaxis_title=xaxis_title,
-        yaxis_title=yaxis_title
+        template = 'simple_white'
     )
     return fig
