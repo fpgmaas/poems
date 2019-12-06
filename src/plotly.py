@@ -1,4 +1,5 @@
 import plotly.graph_objs as go
+import plotly.figure_factory as ff
 from plotly.subplots import make_subplots
 from typing import List
 import numpy as np
@@ -271,3 +272,26 @@ def plot_events_timeline(x,y,text,title,xaxis_title,yaxis_title):
             )
     )
     return fig
+
+def plot_meter(text, meter, title, colorscale):
+    """
+    Plot the metre of some text.
+    """
+    fig = ff.create_annotated_heatmap(
+        z=meter, 
+        annotation_text=text,
+        colorscale=colorscale
+    )
+    fig.update_layout(
+        height=40+40*len(meter),
+        width=50*max(len(x) for x in meter)+200,
+        margin=dict(l=20, r=200, t=25, b=15),
+        scene=dict(aspectmode='data'),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        xaxis=dict(showgrid=False),
+        yaxis=dict(showgrid=False),
+        title = title
+    )
+    return fig
+    
