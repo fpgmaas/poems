@@ -117,30 +117,36 @@ def merge_lines(lines, tuple_list, sep = ''):
     """
     return [sep.join([lines[a] for a in tpl]) for tpl in tuple_list]
 
-def count_matching_zeroes(a,b):
+def scansion_match_score(a,b):
     """
-    Count the number of places where two strings both have a '0'.
+    Count the number of places where two strings both have a '0'. Also add
+    the number of 1's predicted correctly out of the total number of characters as fractional part.
     
     Example:
-    > scansion_match_score('101','001') 
-    > 1
+    > scansion_match_score('1010','0010') 
+    > 2.25
     
     """
-    return sum((a[i] == '0') and (b[i] == '0') for i in range(len(a)))
+    
+    matching_0 = sum((a[i] == '0') and (b[i] == '0') for i in range(len(a)))
+    matching_1 =  sum((a[i] == '1') and (b[i] == '1') for i in range(len(a)))
+
+    return  matching_0 + matching_1/len(a)
 
 def get_known_metre(scansion_list, known_metres_inv):
     """
     Use a list of scansion per line to estimate the metre of the poem. The assumption is 
-    that a poem always has at most three different known metres. Furthermore, since our method of
+    that a poem always has at most two different known metres. Furthermore, since our method of
     identifying the scansion overestimates the number of stressed syllables, we will use the number
-    of accurate non-stressed syllables to determine the known metre.
+    of accurate non-stressed syllables to determine the known metre. If the number of unstressed syllables
+    is equal, we look at the correct stressed syllables.
     
     scansion_list: A list with scansions per line, denoted as a string with 1's and 0's.
     known_metres_inv: A dict with keys strings of scansions, and as values the corresponding metre name.
     
     Example usage:
     > known_metres_inv = {'1010' : 'trochaic bimeter',
-    >                 '101' :  'trochaic bimeter*'}
+    >                     '101' :  'trochaic bimeter*'}
     > scansion_list = ['1010','1010','1011','1010']
     > get_known_metre(scansion_list, known_metres_inv)
     > ['trochaic bimeter']
@@ -152,21 +158,21 @@ def get_known_metre(scansion_list, known_metres_inv):
     # of syllables in the line, and b a list of the most likely know metres.
     metre_list=[]
     for scansion in scansion_list:
-        l = [(count_matching_zeroes(scansion,k),v) for k, v in known_metres_inv.items() if len(k) == len(scansion)]    
+        l = [(scansion_match_score(k,scansion),v) for k, v in known_metres_inv.items() if len(k) == len(scansion)]    
         if l:
             maxValue = max(l, key=lambda x: x[0])[0]
             maxValueList = [x[1] for x in l if x[0] == maxValue]
             metre_list.append([len(scansion),maxValueList])
 
+    display(metre_list)
     # If metre_list has at least one element, create metres_list. The elements in this list
     # contain per line length all the predicted metres, still to be flattened.
-    # If more than three elements, we only look at the stats for the three highest line lengths.
-    # this is to filter outliers, if in some shorter lines the metre was not found and thus they
-    # could not be combined.
+    # If more than two elements, we only look at the stats for the two most common line lengths.
     if metre_list:        
         (values,counts) = np.unique([x[0] for x in metre_list],return_counts=True)
         values = values[counts>1]
-        values = sorted(list(values),reverse=True)[:np.min([len(values),3])]       
+        counts = counts[counts>1]
+        values = values[(-counts).argsort()][:np.min([len(values),2])]      
         metres_list = [[y[1] for y in metre_list if y[0] == val] for val in values]
 
         # Now, find per line length the most commonly predicted metre. In case of a tie, pick one at random.
@@ -180,6 +186,7 @@ def get_known_metre(scansion_list, known_metres_inv):
                 result.append(np.random.choice(values[ind]))
             else:
                 result.append(values[ind][0])
+        result.sort()
     else:
         result = 'unknown'
     return result

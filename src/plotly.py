@@ -232,3 +232,42 @@ def plot_multiple_timelines(x,y,groups,unique_groups,text,title,xaxis_title,yaxi
         template = 'simple_white'
     )
     return fig
+
+def plot_events_timeline(x,y,text,title,xaxis_title,yaxis_title):
+    """
+    Returns a plot with events on timelines, one for each unique vale in y.
+    x: dates
+    y: event group
+    text: numpy array with hover text for each observation
+    title: Title of the plot
+    xaxis_title: Tile of the x-axis
+    yaxis_title: Tile of the y-axis
+    """
+        
+    fig = go.Figure(data=go.Scatter(
+        x=x,
+        y=y,
+        text = text,
+        mode='markers',
+        marker=dict(
+            size = 8,
+            line_width=1,
+            opacity=1
+        ),
+    ))
+
+    fig.update_layout(
+        title=title,
+        title_x=0.5,
+        template = 'simple_white',
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title,
+        yaxis=dict(
+            tickfont=dict(size=10),
+            tickvals=y.unique(),
+            showgrid=True, 
+            gridwidth=1, 
+            gridcolor='rgba(255, 255, 255)'
+            )
+    )
+    return fig
