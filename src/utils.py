@@ -23,7 +23,10 @@ def export_ipynb_for_github_pages(filename,front_matter_str,prefix):
     subprocess.call(["jupyter", "nbconvert","--to","html","--template","hidecode",filename,"--output",filename_html])
 
     subprocess.call(["sed", "-i", "s/{{/{ {/g", filename_html])
-
+    subprocess.call(["sed", "-i", "s/.navbar/.navbar2/g", filename_html])
+    subprocess.call(["sed", "-i", "s/.nav /.nav2 /g", filename_html])
+    subprocess.call(["sed", "-i", "s/.container-fluid /.container-fluid2 /g", filename_html])
+    
     with open(filename_html, 'r') as original: 
         data = original.read()
     with open(filename_html, 'w') as modified: 

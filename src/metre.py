@@ -117,21 +117,25 @@ def merge_lines(lines, tuple_list, sep = ''):
     """
     return [sep.join([lines[a] for a in tpl]) for tpl in tuple_list]
 
-def scansion_match_score(a,b):
+def scansion_match_score(found_metre,known_metre):
     """
-    Count the number of places where two strings both have a '0'. Also add
-    the number of 1's predicted correctly out of the total number of characters as fractional part.
+    Count the number of places where the known and found metre both are unstressed, i.e. have a '0'. 
+    Also add the number of 1's predicted correctly divded by the number of 1's in the known metre. 
+    Substract eps to make sure that correctly predicted 0's is always prioritized, and the 1's are only
+    used to determine ties.
     
     Example:
     > scansion_match_score('1010','0010') 
-    > 2.25
+    > 2.99999
     
     """
     
-    matching_0 = sum((a[i] == '0') and (b[i] == '0') for i in range(len(a)))
-    matching_1 =  sum((a[i] == '1') and (b[i] == '1') for i in range(len(a)))
+    eps=0.00001
+    matching_0 = sum((found_metre[i] == '0') and (known_metre[i] == '0') for i in range(len(found_metre)))
+    matching_1 = sum((found_metre[i] == '1') and (known_metre[i] == '1') for i in range(len(found_metre))) 
+    matching_1_frac = matching_1 / sum((x == '1' for x in known_metre)) - eps
 
-    return  matching_0 + matching_1/len(a)
+    return  matching_0 + matching_1_frac
 
 def get_known_metre(scansion_list, known_metres_inv):
     """
@@ -158,7 +162,7 @@ def get_known_metre(scansion_list, known_metres_inv):
     # of syllables in the line, and b a list of the most likely know metres.
     metre_list=[]
     for scansion in scansion_list:
-        l = [(scansion_match_score(k,scansion),v) for k, v in known_metres_inv.items() if len(k) == len(scansion)]    
+        l = [(scansion_match_score(scansion,k),v) for k, v in known_metres_inv.items() if len(k) == len(scansion)]    
         if l:
             maxValue = max(l, key=lambda x: x[0])[0]
             maxValueList = [x[1] for x in l if x[0] == maxValue]
