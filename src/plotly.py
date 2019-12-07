@@ -283,7 +283,7 @@ def plot_events_timeline(x,y,text,title,xaxis_title,yaxis_title):
 
 def plot_meter(text, meter, title, colorscale):
     """
-    Plot the metre of some text.
+    Plot the meter of some text.
     """
     fig = ff.create_annotated_heatmap(
         z=meter, 
@@ -303,3 +303,66 @@ def plot_meter(text, meter, title, colorscale):
     )
     return fig
     
+    
+def plot_grouped_boxplot(df,obs_col,group_col,unique_groups,title):
+    """
+    Returns a grouped box plot.
+    df: Dataframe
+    obs_col: the name of the column with observed values
+    group_col: the name of the column with groups
+    unique_groups: The groups to include.
+    title: Title of the plot
+    """
+    fig = go.Figure()
+
+    for group in unique_groups:
+        df_subset = df[df[group_col]==group]
+        fig.add_trace(go.Box(
+            y=df_subset[obs_col],
+            name=group,
+            boxpoints='outliers'
+        ))
+
+    fig.update_layout(
+        title_text=title,
+        height = 1200,
+        title_x=0.5,
+        template = 'simple_white')
+    return fig
+
+
+def plot_overlayed_histogram(df,obs_col,group_col,unique_groups,title,xaxis_title,yaxis_title):
+    """
+    Returns multiple histograms overlayed; one per group.
+    df: Dataframe
+    obs_col: the name of the column with observed values
+    group_col: the name of the column with groups
+    unique_groups: The groups to include.
+    title: Title of the plot
+    xaxis_title: Tile of the x-axis
+    yaxis_title: Tile of the y-axis
+    """
+    
+    default_plotly_colors = ['#1f77b4','#ff7f0e', '#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
+
+    fig = go.Figure()
+    for ix, group in unique_groups.items():
+        df_subset = df[df[group_col]==group]
+        fig.add_trace(go.Histogram(
+                               x=df_subset[obs_col], 
+                               name=group,
+                               marker_color = default_plotly_colors[ix],
+                               histnorm='percent',
+                               xbins=dict(size=1))
+                     )
+
+    # Overlay both histograms
+    fig.update_layout(
+        barmode='overlay',
+        title=title,
+        title_x=0.5,
+        template = 'simple_white',
+        xaxis_title=xaxis_title,
+        yaxis_title=yaxis_title)
+    fig.update_traces(opacity=0.5)
+    return fig
