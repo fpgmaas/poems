@@ -4,6 +4,8 @@ from plotly.subplots import make_subplots
 from typing import List
 import numpy as np
 
+default_plotly_colors = ['#1f77b4','#ff7f0e', '#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
+
 def plot_histogram(x, title, xaxis_title, yaxis_title, params: dict = None):
     """
     Returns a plotly histogram.
@@ -204,12 +206,17 @@ def plot_multiple_timelines(x,y,groups,unique_groups,text,title,xaxis_title,yaxi
     yaxis_title: Tile of the y-axis
     figsize: tuple (width, height) of plot.
     """
+    
+    default_plotly_colors = ['#1f77b4','#ff7f0e', '#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf']
+    default_plotly_colors = default_plotly_colors + ['grey']
+
     fig = go.Figure()
-    fig = make_subplots(rows=len(unique_groups), cols=1,
-                               x_title=xaxis_title,
-        y_title=yaxis_title)
-    k=1
-    for group in unique_groups:
+    fig = make_subplots(rows=len(unique_groups), 
+                        cols=1,
+                        x_title=xaxis_title,
+                        y_title=yaxis_title)
+    
+    for ix, group in enumerate(unique_groups):
         subset = groups==group
         fig.append_trace(
             go.Scatter(
@@ -218,10 +225,11 @@ def plot_multiple_timelines(x,y,groups,unique_groups,text,title,xaxis_title,yaxi
                 mode='lines',
                 name=group,
                 hoverinfo = 'text',
-                text=text[subset]
+                text=text[subset],
+                marker_color = default_plotly_colors[ix]
             ),
-        row=k, col=1)
-        k+=1
+        row=ix+1, col=1)
+        
     for i in range(len(unique_groups)):    
         fig.update_yaxes(range=[min(y), max(y)], row=i+1, col=1)
 
