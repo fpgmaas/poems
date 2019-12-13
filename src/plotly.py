@@ -288,7 +288,8 @@ def plot_meter(text, meter, title, colorscale):
     fig = ff.create_annotated_heatmap(
         z=meter, 
         annotation_text=text,
-        colorscale=colorscale
+        colorscale=colorscale,
+        hoverinfo='none'
     )
     fig.update_layout(
         height=40+40*len(meter),
