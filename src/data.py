@@ -25,7 +25,7 @@ def load_data(json_filepath,verbose=False):
 
     if download_comments:
         if verbose: print('Downloading comments...')
-        reddit_user_comment_reader = RedditUserCommentReader('poem_for_your_sprog', verbose = True)
+        reddit_user_comment_reader = RedditUserCommentReader('poem_for_your_sprog', verbose = verbose)
         all_comments = reddit_user_comment_reader.get_comments()
         if verbose: print('Saving to file...')
         with open(json_filepath, 'w') as outfile:
