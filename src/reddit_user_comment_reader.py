@@ -1,52 +1,71 @@
-###
-# Modified from a very helpful post by /u/Stuck_In_The_Matrix
-# https://www.reddit.com/r/pushshift/comments/9zhj0x/how_to_get_an_archive_of_all_your_comments_from/
-###
-
+import glob
+import re
 import requests
-import time
+import datetime as dt
+from pathlib import Path
+import pandas as pd
 
-def get_comments_from_pushshift(**kwargs):
-    r = requests.get("https://api.pushshift.io/reddit/comment/search/",params=kwargs)
-    data = r.json()
-    return data['data']
 
-def get_comments_from_reddit_api(comment_ids,author):
-    headers = {'User-agent':'Comment Collector for /u/{}'.format(author)}
-    params = {}
-    params['id'] = ','.join(["t1_" + id for id in comment_ids])
-    r = requests.get("https://api.reddit.com/api/info",params=params,headers=headers)
-    data = r.json()
-    return data['data']
+class RedditUserCommentReader:
+    def __init__(self, author: str, data_dir: str):
+        self.author = author
+        self.data_dir = data_dir
+        self._create_data_dir_if_not_exists()
 
-class RedditUserCommentReader():
-    
-    def __init__(self,user: str, verbose: bool = False):
-        self.user = user
-        self.verbose = verbose
-    
-    def get_comments(self):
-        all_comments = list()
-        before = None
-        while True:
-            comments = get_comments_from_pushshift(author=self.user,
-                                                   size=100,
-                                                   before=before,
-                                                   sort='desc',
-                                                   sort_type='created_utc')
-            if not comments: break
+    def read(self):
+        last_comment_found = False
+        while not last_comment_found:
+            latest_comment_utc = self._get_latest_read_comment_utc()
+            comment_ids = self._get_batch_of_comment_ids_from_pushshift(from_utc=latest_comment_utc)
+            if len(comment_ids) < 1:
+                last_comment_found = True
+            else:
+                df_comments = self._get_comment_data_from_reddit_api(comment_ids)
+                print(dt.datetime.fromtimestamp(int(df_comments.created_utc.max())))
+                df_comments.to_pickle(
+                    f"{self.data_dir}/df_{int(df_comments.created_utc.min())}_{int(df_comments.created_utc.max())}.pickle"
+                )
+        return self._read_all_pickle_files()
+        
+    def _create_data_dir_if_not_exists(self):
+        Path(self.data_dir).mkdir(parents=True, exist_ok=True)
 
-            # This will get the comment ids from Pushshift in batches of 100 -- Reddit's API only allows 100 at a time
-            comment_ids = []
-            for comment in comments:
-                before = comment['created_utc'] # This will keep track of your position for the next call in the while loop
-                comment_ids.append(comment['id'])
+    def _get_batch_of_comment_ids_from_pushshift(self, from_utc):
+        """
+        For a list of posible arguments, see https://github.com/pushshift/api
+        """
+        r = requests.get(
+            "https://api.pushshift.io/reddit/comment/search/",
+            params={
+                "author": self.author,
+                "size": 100,
+                "after": from_utc,
+                "sort": "asc",
+                "sort_type": "created_utc",
+            },
+        )
+        data = r.json()
+        return [comment["id"] for comment in data["data"]]
 
-            # This will then pass the ids collected from Pushshift and query Reddit's API for the most up to date information
-            comments = get_comments_from_reddit_api(comment_ids,self.user)
-            all_comments += [comment['data'] for comment in comments['children']]
-            if self.verbose:
-                print('Total number of comments fetched: {}'.format(len(all_comments)))
-            time.sleep(2)
-            
-        return all_comments
+    def _get_comment_data_from_reddit_api(self, comment_ids):
+        headers = {"User-agent": "Comment Collector for /u/{}".format(self.author)}
+        params = {"id": ",".join(["t1_" + id for id in comment_ids])}
+        r = requests.get("https://api.reddit.com/api/info", params=params, headers=headers)
+        df = self._convert_comments_to_dataframe(r.json()["data"])
+        return df
+
+    @staticmethod
+    def _convert_comments_to_dataframe(comments):
+        return pd.DataFrame([comment["data"] for comment in comments["children"]])
+
+    def _get_latest_read_comment_utc(self):
+        pickle_files = [f for f in glob.glob(f"{self.data_dir}/*.pickle")]
+        if len(pickle_files) < 1:
+            return None
+        else:
+            latest_utc_per_file = [int(re.findall(r"(\d+)\.pickle", x)[0]) for x in pickle_files]
+            return max(latest_utc_per_file)
+
+    def _read_all_pickle_files(self):
+        pickle_files = [f for f in glob.glob(f"{self.data_dir}/*.pickle")]
+        return pd.concat([pd.read_pickle(x) for x in pickle_files])
