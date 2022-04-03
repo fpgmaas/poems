@@ -17,6 +17,8 @@ default_plotly_colors = [
     "#17becf",
 ]
 
+main_color = "#336699"
+border_color = "#7D9DBD"
 
 def plot_histogram(x, title, xaxis_title, yaxis_title, params: dict = None):
     """
@@ -32,6 +34,10 @@ def plot_histogram(x, title, xaxis_title, yaxis_title, params: dict = None):
         go.Histogram(
             x=x,
             **params,
+            marker = dict(
+                color = main_color, 
+                line = dict(color=border_color)
+            )
         )
     )
 
@@ -55,7 +61,7 @@ def plot_timeline(x, y, title, xaxis_title, yaxis_title, annotations: List = Non
     params: Other params to pass to go.Histogram()
     """
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=x, y=y, mode="lines", name="lines"))
+    fig.add_trace(go.Scatter(x=x, y=y, mode="lines", name="lines", line=dict(color=main_color)))
     fig.update_layout(
         title=title,
         title_x=0.5,
@@ -77,7 +83,11 @@ def plot_horizontal_bar(labels, values, title, xaxis_title, yaxis_title, figsize
     figsize: (width, height)
     """
     fig = go.Figure()
-    fig.add_trace(go.Bar(y=labels, x=values, orientation="h"))
+    fig.add_trace(go.Bar(y=labels, x=values, orientation="h",             
+                         marker = dict(
+                color = main_color, 
+                line = dict(color=border_color)
+            )))
     fig.update_layout(
         width=figsize[0],
         height=figsize[1],
@@ -129,7 +139,8 @@ def plot_scatter(x, y, text, title, xaxis_title, yaxis_title):
             x=x,
             y=y,
             mode="markers",
-            marker=dict(size=8, line_width=1, opacity=0.7),
+            marker=dict(size=8, line_width=1, opacity=0.7,                 color = main_color, 
+                line = dict(color=border_color)),
             hoverinfo="text",
             text=text,
         )
@@ -266,7 +277,7 @@ def plot_multiple_timelines(
 
 def plot_events_timeline(x, y, text, title, xaxis_title, yaxis_title):
     """
-    Returns a plot with events on timelines, one for each unique vale in y.
+    Returns a plot with events on timelines, one for each unique value in y.
     x: dates
     y: event group
     text: numpy array with hover text for each observation
@@ -281,7 +292,8 @@ def plot_events_timeline(x, y, text, title, xaxis_title, yaxis_title):
             y=y,
             text=text,
             mode="markers",
-            marker=dict(size=8, line_width=1, opacity=1),
+            marker=dict(size=8, line_width=1, opacity=1,                 color = main_color, 
+                line = dict(color=border_color)),
         )
     )
 
