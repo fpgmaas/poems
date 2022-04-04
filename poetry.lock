@@ -165,6 +165,14 @@ python-versions = ">=3.7"
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "cmudict"
+version = "1.0.2"
+description = "\"A versioned python wrapper package for The CMU Pronouncing Dictionary data files.\""
+category = "main"
+optional = false
+python-versions = ">=2.7"
+
+[[package]]
 name = "colorama"
 version = "0.4.4"
 description = "Cross-platform colored terminal text."
@@ -804,6 +812,17 @@ python-versions = ">=3.6.2"
 wcwidth = "*"
 
 [[package]]
+name = "pronouncing"
+version = "0.2.0"
+description = "A simple interface for the CMU pronouncing dictionary"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+cmudict = ">=0.4.0"
+
+[[package]]
 name = "psutil"
 version = "5.9.0"
 description = "Cross-platform lib for process and system monitoring in Python."
@@ -1178,7 +1197,7 @@ notebook = ">=4.4.1"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "75f648d966a4b47d2e67d0cda7941edef6eef728b9fdb3f77cf0499d34b77c29"
+content-hash = "4e3a5f9da25c06517fc52f9ae93808827d7d78b1acc662f72fe2ad581ff904a2"
 
 [metadata.files]
 appnope = [
@@ -1320,6 +1339,10 @@ charset-normalizer = [
 click = [
     {file = "click-8.1.2-py3-none-any.whl", hash = "sha256:24e1a4a9ec5bf6299411369b208c1df2188d9eb8d916302fe6bf03faed227f1e"},
     {file = "click-8.1.2.tar.gz", hash = "sha256:479707fe14d9ec9a0757618b7a100a0ae4c4e236fac5b7f80ca68028141a1a72"},
+]
+cmudict = [
+    {file = "cmudict-1.0.2-py2.py3-none-any.whl", hash = "sha256:e4cb67669a5734680c1dd7368e5ffe96fabe5e9bba56bbfc5464423e48136aca"},
+    {file = "cmudict-1.0.2.tar.gz", hash = "sha256:85b03098a9b45c18112f584ac2418348ecbae56b8e66f0d947bba53e4b51e5dd"},
 ]
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
@@ -1711,6 +1734,9 @@ prometheus-client = [
 prompt-toolkit = [
     {file = "prompt_toolkit-3.0.28-py3-none-any.whl", hash = "sha256:30129d870dcb0b3b6a53efdc9d0a83ea96162ffd28ffe077e94215b233dc670c"},
     {file = "prompt_toolkit-3.0.28.tar.gz", hash = "sha256:9f1cd16b1e86c2968f2519d7fb31dd9d669916f515612c269d14e9ed52b51650"},
+]
+pronouncing = [
+    {file = "pronouncing-0.2.0.tar.gz", hash = "sha256:ff7856e1d973b3e16ff490c5cf1abdb52f08f45e2c35e463249b75741331e7c4"},
 ]
 psutil = [
     {file = "psutil-5.9.0-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:55ce319452e3d139e25d6c3f85a1acf12d1607ddedea5e35fb47a552c051161b"},

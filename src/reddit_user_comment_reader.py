@@ -26,7 +26,7 @@ class RedditUserCommentReader:
                     f"{self.data_dir}/df_{int(df_comments.created_utc.min())}_{int(df_comments.created_utc.max())}.pickle"
                 )
         return self._read_all_pickle_files()
-        
+
     def _create_data_dir_if_not_exists(self):
         Path(self.data_dir).mkdir(parents=True, exist_ok=True)
 

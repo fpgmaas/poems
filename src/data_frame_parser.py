@@ -1,11 +1,11 @@
 import datetime as dt
 import re
-    
+
+
 class DataFrameParser:
-    
     def __init__(self):
         pass
-    
+
     def parse(self, df):
         df = self._remove_deleted_comments(df)
         df = self._clean_comments(df)
@@ -14,19 +14,19 @@ class DataFrameParser:
         df = self._add_line_and_lenght_statistics(df)
         df = self._determine_comment_or_poem(df)
         return df
-    
+
     @staticmethod
     def _remove_deleted_comments(df):
         return df[df["author"] != "[deleted]"]
-    
+
     def _clean_comments(self, df):
         df["poem"] = df["body"].apply(self._clean_comment)
         return df
 
-    @staticmethod      
+    @staticmethod
     def _add_date_and_datetime(df):
         df["datetime"] = df["created_utc"].apply(dt.datetime.fromtimestamp)
-        df["date"] = df["datetime"].dt.date  
+        df["date"] = df["datetime"].dt.date
         return df
 
     @staticmethod
@@ -35,13 +35,13 @@ class DataFrameParser:
         df["awards_simple"] = df["all_awardings"].apply(lambda x: [y["name"] + ": " + str(y["count"]) for y in x])
         return df
 
-    @staticmethod   
+    @staticmethod
     def _add_line_and_lenght_statistics(df):
         df["number_of_lines"] = df["poem"].apply(lambda x: 1 + sum(1 for _ in re.finditer(r">", x)))
         df["comment_length"] = df["poem"].str.len()
         df["average_line_length"] = df["comment_length"] / (df["number_of_lines"])
         return df
-    
+
     @staticmethod
     def _determine_comment_or_poem(df):
         df["type"] = "poem"

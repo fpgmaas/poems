@@ -20,6 +20,7 @@ default_plotly_colors = [
 main_color = "#336699"
 border_color = "#7D9DBD"
 
+
 def plot_histogram(x, title, xaxis_title, yaxis_title, params: dict = None):
     """
     Returns a plotly histogram.
@@ -30,16 +31,7 @@ def plot_histogram(x, title, xaxis_title, yaxis_title, params: dict = None):
     params: Other params to pass to go.Histogram()
     """
     fig = go.Figure()
-    fig.add_trace(
-        go.Histogram(
-            x=x,
-            **params,
-            marker = dict(
-                color = main_color, 
-                line = dict(color=border_color)
-            )
-        )
-    )
+    fig.add_trace(go.Histogram(x=x, **params, marker=dict(color=main_color, line=dict(color=border_color))))
 
     fig.update_layout(
         title=title,
@@ -83,11 +75,9 @@ def plot_horizontal_bar(labels, values, title, xaxis_title, yaxis_title, figsize
     figsize: (width, height)
     """
     fig = go.Figure()
-    fig.add_trace(go.Bar(y=labels, x=values, orientation="h",             
-                         marker = dict(
-                color = main_color, 
-                line = dict(color=border_color)
-            )))
+    fig.add_trace(
+        go.Bar(y=labels, x=values, orientation="h", marker=dict(color=main_color, line=dict(color=border_color)))
+    )
     fig.update_layout(
         width=figsize[0],
         height=figsize[1],
@@ -110,7 +100,7 @@ def plot_heatmap(z, x, y, title, figsize: tuple = (600, 600)):
     figsize: (width, height)
     """
 
-    fig = go.Figure(data=go.Heatmap(z=z, x=x, y=y, colorscale="YlOrRd", zmid=0))
+    fig = go.Figure(data=go.Heatmap(z=z, x=x, y=y, autocolorscale=False, colorscale=[[0, 'rgb(255,191,127)'], [1, 'rgb(0,64,128)']], zmid=0))
     fig.update_layout(
         title=title,
         title_x=0.5,
@@ -139,8 +129,7 @@ def plot_scatter(x, y, text, title, xaxis_title, yaxis_title):
             x=x,
             y=y,
             mode="markers",
-            marker=dict(size=8, line_width=1, opacity=0.7,                 color = main_color, 
-                line = dict(color=border_color)),
+            marker=dict(size=8, line_width=1, opacity=0.7, color=main_color, line=dict(color=border_color)),
             hoverinfo="text",
             text=text,
         )
@@ -292,8 +281,7 @@ def plot_events_timeline(x, y, text, title, xaxis_title, yaxis_title):
             y=y,
             text=text,
             mode="markers",
-            marker=dict(size=8, line_width=1, opacity=1,                 color = main_color, 
-                line = dict(color=border_color)),
+            marker=dict(size=8, line_width=1, opacity=1, color=main_color, line=dict(color=border_color)),
         )
     )
 
